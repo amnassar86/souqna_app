@@ -164,7 +164,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         context,
                         'تاريخ الانضمام',
                         user?.createdAt != null 
-                            ? '${user!.createdAt.day}/${user.createdAt.month}/${user.createdAt.year}'
+                            ? '${DateTime.parse(user!.createdAt).day}/${DateTime.parse(user.createdAt).month}/${DateTime.parse(user.createdAt).year}'
                             : 'غير متوفر',
                         Icons.calendar_today_outlined,
                       ),

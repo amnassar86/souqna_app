@@ -74,7 +74,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
 
     try {
       // Refresh the session to check if email is verified
-      await AuthService.client.auth.refreshSession();
+      await SupabaseConfig.client.auth.refreshSession();
       final user = AuthService.getCurrentUser();
       
       if (user?.emailConfirmedAt != null && mounted) {
