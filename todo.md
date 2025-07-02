@@ -59,3 +59,9 @@
 - [ ] اختبارات شاملة
 - [ ] نشر التطبيق
 
+
+
+- [x] إصلاح خطأ 'headlineLarge' في AppTextStyles
+- [x] إصلاح تحذيرات 'avoid_print'
+- [x] إصلاح تحذيرات 'withOpacity' المهملة
+
