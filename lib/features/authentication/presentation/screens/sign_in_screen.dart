@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../../config/app_constants.dart';
-import '../../../../core/services/auth_service.dart';
-import '../../../../core/utils/validators.dart';
+import '../../../../shared/styles/app_colors.dart';
+import '../../../../shared/styles/app_text_styles.dart';
 import '../../../../shared/widgets/custom_text_field.dart';
 import '../../../../shared/widgets/custom_button.dart';
-import '../../../../shared/styles/app_colors.dart';
-import '../../../../routes/app_router.dart';
+import '../../../../config/app_constants.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -19,73 +16,27 @@ class _SignInScreenState extends State<SignInScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _emailFocusNode = FocusNode();
-  final _passwordFocusNode = FocusNode();
-  
-  bool _isLoading = false;
+  bool _isPasswordVisible = false;
+  bool _rememberMe = false;
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
-    _emailFocusNode.dispose();
-    _passwordFocusNode.dispose();
     super.dispose();
   }
 
-  Future<void> _signIn() async {
-    if (!_formKey.currentState!.validate()) {
-      return;
+  void _handleSignIn() {
+    if (_formKey.currentState!.validate()) {
+      // محاكاة تسجيل الدخول - الانتقال للشاشة الرئيسية
+      Navigator.pushReplacementNamed(context, '/home');
     }
-
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      final response = await AuthService.signIn(
-        email: _emailController.text.trim(),
-        password: _passwordController.text,
-      );
-
-      if (response.user != null && mounted) {
-        _showSnackBar(AppConstants.signInSuccess, isError: false);
-        AppRouter.goToHome(context);
-      }
-    } on AuthException catch (e) {
-      if (mounted) {
-        _showSnackBar(e.message);
-      }
-    } catch (e) {
-      if (mounted) {
-        _showSnackBar(AppConstants.unknownError);
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    }
-  }
-
-  void _showSnackBar(String message, {bool isError = true}) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: isError ? AppColors.error : AppColors.success,
-        behavior: SnackBarBehavior.floating,
-        margin: const EdgeInsets.all(AppConstants.defaultPadding),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppConstants.borderRadius),
-        ),
-      ),
-    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(AppConstants.defaultPadding),
@@ -94,120 +45,151 @@ class _SignInScreenState extends State<SignInScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: AppConstants.largePadding * 2),
+                const SizedBox(height: 40),
                 
-                // Logo and Title
-                Center(
-                  child: Column(
-                    children: [
-                      Container(
-                        width: 120,
-                        height: 120,
-                        decoration: BoxDecoration(
-                          color: AppColors.primary,
-                          borderRadius: BorderRadius.circular(60),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.primary.withOpacity(0.3),
-                              blurRadius: 20,
-                              offset: const Offset(0, 10),
-                            ),
-                          ],
-                        ),
-                        child: const Icon(
-                          Icons.store,
-                          size: 60,
-                          color: AppColors.textOnPrimary,
-                        ),
-                      ),
-                      const SizedBox(height: AppConstants.defaultPadding),
-                      Text(
-                        AppConstants.appName,
-                        style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: AppConstants.smallPadding),
-                      Text(
-                        'مرحباً بك مرة أخرى',
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: AppColors.textSecondary,
-                        ),
+                // شعار التطبيق
+                Container(
+                  height: 120,
+                  width: 120,
+                  margin: const EdgeInsets.only(bottom: 32),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.primary.withOpacity(0.3),
+                        blurRadius: 20,
+                        offset: const Offset(0, 10),
                       ),
                     ],
                   ),
+                  child: const Icon(
+                    Icons.shopping_bag,
+                    size: 60,
+                    color: AppColors.textOnPrimary,
+                  ),
                 ),
+
+                // العنوان الرئيسي
+                Text(
+                  'مرحباً بك في سوقنا',
+                  style: AppTextStyles.headlineMedium.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
                 
-                const SizedBox(height: AppConstants.largePadding * 2),
-                
-                // Email Field
+                // العنوان الفرعي
+                Text(
+                  'سجل دخولك للوصول إلى أفضل العروض',
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 40),
+
+                // حقل البريد الإلكتروني
                 CustomTextField(
+                  controller: _emailController,
                   label: 'البريد الإلكتروني',
                   hint: 'أدخل بريدك الإلكتروني',
-                  controller: _emailController,
-                  validator: Validators.validateEmail,
+                  prefixIcon: Icons.email_outlined,
                   keyboardType: TextInputType.emailAddress,
-                  textInputAction: TextInputAction.next,
-                  focusNode: _emailFocusNode,
-                  onSubmitted: (_) => _passwordFocusNode.requestFocus(),
-                  prefixIcon: const Icon(Icons.email_outlined),
-                ),
-                
-                const SizedBox(height: AppConstants.defaultPadding),
-                
-                // Password Field
-                CustomTextField(
-                  label: 'كلمة المرور',
-                  hint: 'أدخل كلمة المرور',
-                  controller: _passwordController,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'كلمة المرور مطلوبة';
+                      return 'يرجى إدخال البريد الإلكتروني';
+                    }
+                    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                      return 'يرجى إدخال بريد إلكتروني صحيح';
                     }
                     return null;
                   },
-                  obscureText: true,
-                  textInputAction: TextInputAction.done,
-                  focusNode: _passwordFocusNode,
-                  onSubmitted: (_) => _signIn(),
-                  prefixIcon: const Icon(Icons.lock_outline),
                 ),
-                
-                const SizedBox(height: AppConstants.smallPadding),
-                
-                // Forgot Password Link
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: TextButton(
-                    onPressed: () => AppRouter.goToForgotPassword(context),
-                    child: const Text('نسيت كلمة المرور؟'),
+                const SizedBox(height: 16),
+
+                // حقل كلمة المرور
+                CustomTextField(
+                  controller: _passwordController,
+                  label: 'كلمة المرور',
+                  hint: 'أدخل كلمة المرور',
+                  prefixIcon: Icons.lock_outline,
+                  obscureText: !_isPasswordVisible,
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _isPasswordVisible ? Icons.visibility_off : Icons.visibility,
+                      color: AppColors.textSecondary,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _isPasswordVisible = !_isPasswordVisible;
+                      });
+                    },
                   ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'يرجى إدخال كلمة المرور';
+                    }
+                    if (value.length < 6) {
+                      return 'كلمة المرور يجب أن تكون 6 أحرف على الأقل';
+                    }
+                    return null;
+                  },
                 ),
-                
-                const SizedBox(height: AppConstants.largePadding),
-                
-                // Sign In Button
+                const SizedBox(height: 16),
+
+                // تذكرني ونسيت كلمة المرور
+                Row(
+                  children: [
+                    Checkbox(
+                      value: _rememberMe,
+                      onChanged: (value) {
+                        setState(() {
+                          _rememberMe = value ?? false;
+                        });
+                      },
+                      activeColor: AppColors.primary,
+                    ),
+                    Text(
+                      'تذكرني',
+                      style: AppTextStyles.bodySmall,
+                    ),
+                    const Spacer(),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/forgot-password');
+                      },
+                      child: Text(
+                        'نسيت كلمة المرور؟',
+                        style: AppTextStyles.bodySmall.copyWith(
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 32),
+
+                // زر تسجيل الدخول
                 CustomButton(
                   text: 'تسجيل الدخول',
-                  onPressed: _signIn,
-                  isLoading: _isLoading,
-                  icon: const Icon(Icons.login),
+                  onPressed: _handleSignIn,
+                  icon: Icons.login,
                 ),
-                
-                const SizedBox(height: AppConstants.largePadding),
-                
-                // Divider
+                const SizedBox(height: 24),
+
+                // خط فاصل
                 Row(
                   children: [
                     const Expanded(child: Divider()),
                     Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: AppConstants.defaultPadding,
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Text(
                         'أو',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        style: AppTextStyles.bodySmall.copyWith(
                           color: AppColors.textSecondary,
                         ),
                       ),
@@ -215,28 +197,89 @@ class _SignInScreenState extends State<SignInScreen> {
                     const Expanded(child: Divider()),
                   ],
                 ),
-                
-                const SizedBox(height: AppConstants.largePadding),
-                
-                // Sign Up Link
+                const SizedBox(height: 24),
+
+                // أزرار تسجيل الدخول بوسائل أخرى
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: () {
+                          // محاكاة تسجيل الدخول بجوجل
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('تسجيل الدخول بجوجل قريباً')),
+                          );
+                        },
+                        icon: const Icon(Icons.g_mobiledata, color: AppColors.error),
+                        label: Text(
+                          'جوجل',
+                          style: AppTextStyles.bodyMedium.copyWith(
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          side: const BorderSide(color: AppColors.border),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(AppConstants.borderRadius),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: () {
+                          // محاكاة تسجيل الدخول بفيسبوك
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('تسجيل الدخول بفيسبوك قريباً')),
+                          );
+                        },
+                        icon: const Icon(Icons.facebook, color: Colors.blue),
+                        label: Text(
+                          'فيسبوك',
+                          style: AppTextStyles.bodyMedium.copyWith(
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          side: const BorderSide(color: AppColors.border),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(AppConstants.borderRadius),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 32),
+
+                // رابط إنشاء حساب جديد
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
                       'ليس لديك حساب؟ ',
-                      style: Theme.of(context).textTheme.bodyMedium,
+                      style: AppTextStyles.bodyMedium.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
                     ),
                     TextButton(
-                      onPressed: () => AppRouter.goToSignUp(context),
-                      child: const Text(
-                        'إنشاء حساب',
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/sign-up');
+                      },
+                      child: Text(
+                        'إنشاء حساب جديد',
+                        style: AppTextStyles.bodyMedium.copyWith(
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ],
                 ),
-                
-                const SizedBox(height: AppConstants.largePadding),
+                const SizedBox(height: 20),
               ],
             ),
           ),
