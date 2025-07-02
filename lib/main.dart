@@ -1,15 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'config/supabase_config.dart';
 import 'config/app_constants.dart';
 import 'shared/themes/app_theme.dart';
 import 'routes/app_router.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  // Initialize Supabase
-  await SupabaseConfig.initialize();
   
   // Set preferred orientations
   await SystemChrome.setPreferredOrientations([

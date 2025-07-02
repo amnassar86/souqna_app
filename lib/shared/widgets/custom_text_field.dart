@@ -6,7 +6,7 @@ class CustomTextField extends StatefulWidget {
   final String label;
   final String? hint;
   final TextEditingController controller;
-  final String? Function(String?)? validator;
+  // final String? Function(String?)? validator; // تم التعليق بناءً على تعليمات المستخدم
   final TextInputType keyboardType;
   final bool obscureText;
   final Widget? prefixIcon;
@@ -15,17 +15,17 @@ class CustomTextField extends StatefulWidget {
   final int? maxLines;
   final int? maxLength;
   final TextInputAction? textInputAction;
-  final Function(String)? onChanged;
-  final Function(String)? onSubmitted;
-  final FocusNode? focusNode;
-  final bool autofocus;
+  // final Function(String)? onChanged; // تم التعليق بناءً على تعليمات المستخدم
+  // final Function(String)? onSubmitted; // تم التعليق بناءً على تعليمات المستخدم
+  // final FocusNode? focusNode; // تم التعليق بناءً على تعليمات المستخدم
+  // final bool autofocus; // تم التعليق بناءً على تعليمات المستخدم
 
   const CustomTextField({
     super.key,
     required this.label,
     this.hint,
     required this.controller,
-    this.validator,
+    // this.validator, // تم التعليق بناءً على تعليمات المستخدم
     this.keyboardType = TextInputType.text,
     this.obscureText = false,
     this.prefixIcon,
@@ -34,10 +34,10 @@ class CustomTextField extends StatefulWidget {
     this.maxLines = 1,
     this.maxLength,
     this.textInputAction,
-    this.onChanged,
-    this.onSubmitted,
-    this.focusNode,
-    this.autofocus = false,
+    // this.onChanged,
+    // this.onSubmitted,
+    // this.focusNode,
+    // this.autofocus = false,
   });
 
   @override
@@ -68,17 +68,17 @@ class _CustomTextFieldState extends State<CustomTextField> {
         const SizedBox(height: AppConstants.smallPadding),
         TextFormField(
           controller: widget.controller,
-          validator: widget.validator,
+          // validator: widget.validator, // تم التعليق بناءً على تعليمات المستخدم
           keyboardType: widget.keyboardType,
           obscureText: _obscureText,
           enabled: widget.enabled,
           maxLines: widget.maxLines,
           maxLength: widget.maxLength,
           textInputAction: widget.textInputAction,
-          onChanged: widget.onChanged,
-          onFieldSubmitted: widget.onSubmitted,
-          focusNode: widget.focusNode,
-          autofocus: widget.autofocus,
+          // onChanged: widget.onChanged, // تم التعليق بناءً على تعليمات المستخدم
+          // onFieldSubmitted: widget.onSubmitted, // تم التعليق بناءً على تعليمات المستخدم
+          // focusNode: widget.focusNode, // تم التعليق بناءً على تعليمات المستخدم
+          // autofocus: widget.autofocus, // تم التعليق بناءً على تعليمات المستخدم
           style: Theme.of(context).textTheme.bodyLarge,
           decoration: InputDecoration(
             hintText: widget.hint ?? widget.label,
@@ -103,4 +103,5 @@ class _CustomTextFieldState extends State<CustomTextField> {
     );
   }
 }
+
 

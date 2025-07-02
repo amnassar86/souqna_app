@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../config/app_constants.dart';
-import '../../../../core/utils/validators.dart';
 import '../../../../shared/widgets/custom_text_field.dart';
 import '../../../../shared/widgets/custom_button.dart';
 import '../../../../shared/styles/app_colors.dart';
-import '../../../../routes/app_router.dart';
 
 class PhoneVerificationScreen extends StatefulWidget {
   final String? initialPhoneNumber;
-  
+
   const PhoneVerificationScreen({
     super.key,
     this.initialPhoneNumber,
@@ -23,19 +21,18 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
   final _formKey = GlobalKey<FormState>();
   final _phoneController = TextEditingController();
   final _otpController = TextEditingController();
-  final _phoneFocusNode = FocusNode();
-  final _otpFocusNode = FocusNode();
-  
-  bool _isLoading = false;
-  bool _isResending = false;
+
+  // استخدام حالة وهمية للعرض الثابت
   bool _otpSent = false;
-  int _resendCountdown = 0;
+  final String _mockPhoneNumber = '0501234567';
 
   @override
   void initState() {
     super.initState();
     if (widget.initialPhoneNumber != null) {
       _phoneController.text = widget.initialPhoneNumber!;
+    } else {
+      _phoneController.text = _mockPhoneNumber;
     }
   }
 
@@ -43,122 +40,10 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
   void dispose() {
     _phoneController.dispose();
     _otpController.dispose();
-    _phoneFocusNode.dispose();
-    _otpFocusNode.dispose();
     super.dispose();
   }
 
-  Future<void> _sendOTP() async {
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
-
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      // TODO: Implement OTP sending logic with Supabase or SMS service
-      await Future.delayed(const Duration(seconds: 2)); // Simulate API call
-      
-      if (mounted) {
-        setState(() {
-          _otpSent = true;
-          _resendCountdown = 60;
-        });
-        _startCountdown();
-        _showSnackBar('تم إرسال رمز التحقق إلى ${_phoneController.text}', isError: false);
-        _otpFocusNode.requestFocus();
-      }
-    } catch (e) {
-      if (mounted) {
-        _showSnackBar('حدث خطأ أثناء إرسال رمز التحقق');
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    }
-  }
-
-  Future<void> _verifyOTP() async {
-    if (_otpController.text.length != 6) {
-      _showSnackBar('يرجى إدخال رمز التحقق المكون من 6 أرقام');
-      return;
-    }
-
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      // TODO: Implement OTP verification logic
-      await Future.delayed(const Duration(seconds: 2)); // Simulate API call
-      
-      if (mounted) {
-        _showSnackBar('تم التحقق من رقم الهاتف بنجاح!', isError: false);
-        AppRouter.goToHome(context);
-      }
-    } catch (e) {
-      if (mounted) {
-        _showSnackBar('رمز التحقق غير صحيح');
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    }
-  }
-
-  Future<void> _resendOTP() async {
-    if (_resendCountdown > 0) return;
-
-    setState(() {
-      _isResending = true;
-    });
-
-    try {
-      // TODO: Implement OTP resending logic
-      await Future.delayed(const Duration(seconds: 1)); // Simulate API call
-      
-      if (mounted) {
-        setState(() {
-          _resendCountdown = 60;
-        });
-        _startCountdown();
-        _showSnackBar('تم إعادة إرسال رمز التحقق', isError: false);
-      }
-    } catch (e) {
-      if (mounted) {
-        _showSnackBar('حدث خطأ أثناء إعادة الإرسال');
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isResending = false;
-        });
-      }
-    }
-  }
-
-  void _startCountdown() {
-    Future.doWhile(() async {
-      await Future.delayed(const Duration(seconds: 1));
-      if (mounted && _resendCountdown > 0) {
-        setState(() {
-          _resendCountdown--;
-        });
-        return true;
-      }
-      return false;
-    });
-  }
-
-  void _showSnackBar(String message, {bool isError = true}) {
+  void _showSnackBar(String message, {bool isError = false}) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
@@ -170,6 +55,28 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
         ),
       ),
     );
+  }
+
+  void _sendOTP() {
+    if (_formKey.currentState!.validate()) {
+      setState(() {
+        _otpSent = true;
+      });
+      _showSnackBar('تم إرسال رمز التحقق إلى ${_phoneController.text} (محاكاة)', isError: false);
+    }
+  }
+
+  void _verifyOTP() {
+    if (_otpController.text.length != 6) {
+      _showSnackBar('يرجى إدخال رمز التحقق المكون من 6 أرقام');
+      return;
+    }
+    _showSnackBar('تم التحقق من رقم الهاتف بنجاح! (محاكاة)', isError: false);
+    GoRouter.of(context).go(AppConstants.homeRoute);
+  }
+
+  void _resendOTP() {
+    _showSnackBar('تم إعادة إرسال رمز التحقق (محاكاة)', isError: false);
   }
 
   @override
@@ -190,7 +97,7 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const SizedBox(height: AppConstants.largePadding),
-                
+
                 // Header
                 Center(
                   child: Column(
@@ -220,9 +127,9 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
                       Text(
                         _otpSent ? 'أدخل رمز التحقق' : 'التحقق من رقم الهاتف',
                         style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          color: AppColors.textPrimary,
-                          fontWeight: FontWeight.bold,
-                        ),
+                              color: AppColors.textPrimary,
+                              fontWeight: FontWeight.bold,
+                            ),
                       ),
                       const SizedBox(height: AppConstants.smallPadding),
                       Text(
@@ -230,38 +137,42 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
                             ? 'أدخل الرمز المرسل إلى ${_phoneController.text}'
                             : 'سنرسل لك رمز تحقق عبر الرسائل النصية',
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: AppColors.textSecondary,
-                        ),
+                              color: AppColors.textSecondary,
+                            ),
                         textAlign: TextAlign.center,
                       ),
                     ],
                   ),
                 ),
-                
+
                 const SizedBox(height: AppConstants.largePadding * 2),
-                
+
                 if (!_otpSent) ...[
                   // Phone Number Field
                   CustomTextField(
                     label: 'رقم الهاتف',
                     hint: '05xxxxxxxx',
                     controller: _phoneController,
-                    validator: Validators.validatePhone,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'يرجى إدخال رقم الهاتف';
+                      }
+                      if (!RegExp(r'^(05)([0-9]{8})$').hasMatch(value)) {
+                        return 'يرجى إدخال رقم هاتف سعودي صحيح (05xxxxxxxx)';
+                      }
+                      return null;
+                    },
                     keyboardType: TextInputType.phone,
                     textInputAction: TextInputAction.done,
-                    focusNode: _phoneFocusNode,
-                    onSubmitted: (_) => _sendOTP(),
                     prefixIcon: const Icon(Icons.phone),
-                    autofocus: widget.initialPhoneNumber == null,
                   ),
-                  
+
                   const SizedBox(height: AppConstants.largePadding),
-                  
+
                   // Send OTP Button
                   CustomButton(
                     text: 'إرسال رمز التحقق',
                     onPressed: _sendOTP,
-                    isLoading: _isLoading,
                     icon: const Icon(Icons.send),
                   ),
                 ] else ...[
@@ -281,8 +192,6 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
                     },
                     keyboardType: TextInputType.number,
                     textInputAction: TextInputAction.done,
-                    focusNode: _otpFocusNode,
-                    onSubmitted: (_) => _verifyOTP(),
                     maxLength: 6,
                     prefixIcon: const Icon(Icons.security),
                     onChanged: (value) {
@@ -291,32 +200,28 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
                       }
                     },
                   ),
-                  
+
                   const SizedBox(height: AppConstants.largePadding),
-                  
+
                   // Verify OTP Button
                   CustomButton(
                     text: 'تحقق من الرمز',
                     onPressed: _verifyOTP,
-                    isLoading: _isLoading,
                     icon: const Icon(Icons.verified_user),
                   ),
-                  
+
                   const SizedBox(height: AppConstants.defaultPadding),
-                  
+
                   // Resend OTP Button
                   CustomButton(
-                    text: _resendCountdown > 0
-                        ? 'إعادة الإرسال خلال ${_resendCountdown}s'
-                        : 'إعادة إرسال الرمز',
-                    onPressed: _resendCountdown > 0 ? null : _resendOTP,
-                    isLoading: _isResending,
+                    text: 'إعادة إرسال الرمز',
+                    onPressed: _resendOTP,
                     type: ButtonType.outline,
                     icon: const Icon(Icons.refresh),
                   ),
-                  
+
                   const SizedBox(height: AppConstants.defaultPadding),
-                  
+
                   // Change Phone Number
                   CustomButton(
                     text: 'تغيير رقم الهاتف',
@@ -324,17 +229,15 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
                       setState(() {
                         _otpSent = false;
                         _otpController.clear();
-                        _resendCountdown = 0;
                       });
-                      _phoneFocusNode.requestFocus();
                     },
                     type: ButtonType.text,
                     icon: const Icon(Icons.edit),
                   ),
                 ],
-                
+
                 const SizedBox(height: AppConstants.largePadding),
-                
+
                 // Instructions
                 Container(
                   padding: const EdgeInsets.all(AppConstants.defaultPadding),
@@ -357,8 +260,8 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
                           Text(
                             'معلومات مهمة:',
                             style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
+                                  fontWeight: FontWeight.bold,
+                                ),
                           ),
                         ],
                       ),
@@ -369,15 +272,15 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
                         '• تحقق من رسائل SMS الواردة\n'
                         '• يمكنك إعادة طلب الرمز بعد انتهاء العد التنازلي',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AppColors.textSecondary,
-                        ),
+                              color: AppColors.textSecondary,
+                            ),
                       ),
                     ],
                   ),
                 ),
-                
+
                 const SizedBox(height: AppConstants.largePadding),
-                
+
                 // Skip for now option
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -387,7 +290,7 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                     TextButton(
-                      onPressed: () => AppRouter.goToHome(context),
+                      onPressed: () => GoRouter.of(context).go(AppConstants.homeRoute),
                       child: const Text(
                         'التخطي',
                         style: TextStyle(fontWeight: FontWeight.bold),

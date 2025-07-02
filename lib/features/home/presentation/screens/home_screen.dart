@@ -5,6 +5,7 @@ import '../../../../shared/widgets/product_card.dart';
 import '../../../../shared/widgets/store_card.dart';
 import '../../../../shared/data/mock_data.dart';
 import '../../../../config/app_constants.dart';
+// import 'package:go_router/go_router.dart'; // تم التعليق بناءً على تعليمات المستخدم
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -14,12 +15,12 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final _searchController = TextEditingController();
-  int _currentBannerIndex = 0;
+  // final _searchController = TextEditingController(); // تم التعليق بناءً على تعليمات المستخدم
+  // int _currentBannerIndex = 0; // تم التعليق بناءً على تعليمات المستخدم
 
   @override
   void dispose() {
-    _searchController.dispose();
+    // _searchController.dispose(); // تم التعليق بناءً على تعليمات المستخدم
     super.dispose();
   }
 
@@ -27,39 +28,44 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: SafeArea(
+      body: const SafeArea(
         child: CustomScrollView(
           slivers: [
             // شريط التطبيق المخصص
-            _buildCustomAppBar(),
+            _CustomAppBar(),
             
             // شريط البحث
-            _buildSearchBar(),
+            _SearchBar(),
             
             // البانرات الترويجية
-            _buildPromoBanners(),
+            _PromoBanners(),
             
             // الفئات الرئيسية
-            _buildCategoriesSection(),
+            _CategoriesSection(),
             
             // المحلات المميزة
-            _buildFeaturedStores(),
+            _FeaturedStores(),
             
             // المنتجات الأكثر مبيعاً
-            _buildBestSellingProducts(),
+            _BestSellingProducts(),
             
             // مساحة إضافية في النهاية
-            const SliverToBoxAdapter(
+            SliverToBoxAdapter(
               child: SizedBox(height: 20),
             ),
           ],
         ),
       ),
-      bottomNavigationBar: _buildBottomNavigationBar(),
+      bottomNavigationBar: _BottomNavigationBar(),
     );
   }
+}
 
-  Widget _buildCustomAppBar() {
+class _CustomAppBar extends StatelessWidget {
+  const _CustomAppBar();
+
+  @override
+  Widget build(BuildContext context) {
     return SliverToBoxAdapter(
       child: Container(
         padding: const EdgeInsets.all(AppConstants.defaultPadding),
@@ -82,10 +88,10 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               child: IconButton(
                 onPressed: () {
-                  // فتح القائمة الجانبية
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('القائمة الجانبية قريباً')),
-                  );
+                  // ScaffoldMessenger.of(context).showSnackBar(
+                  //   const SnackBar(content: Text('القائمة الجانبية قريباً')),
+                  // );
+                  print('القائمة الجانبية قريباً');
                 },
                 icon: const Icon(
                   Icons.menu,
@@ -151,10 +157,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   IconButton(
                     onPressed: () {
-                      // فتح الإشعارات
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('الإشعارات قريباً')),
-                      );
+                      // ScaffoldMessenger.of(context).showSnackBar(
+                      //   const SnackBar(content: Text('الإشعارات قريباً')),
+                      // );
+                      print('الإشعارات قريباً');
                     },
                     icon: const Icon(
                       Icons.notifications_outlined,
@@ -182,8 +188,13 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+}
 
-  Widget _buildSearchBar() {
+class _SearchBar extends StatelessWidget {
+  const _SearchBar();
+
+  @override
+  Widget build(BuildContext context) {
     return SliverToBoxAdapter(
       child: Container(
         margin: const EdgeInsets.symmetric(
@@ -203,7 +214,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
           child: TextField(
-            controller: _searchController,
+            // controller: _searchController, // تم التعليق بناءً على تعليمات المستخدم
             decoration: InputDecoration(
               hintText: 'ابحث عن المنتجات والمحلات...',
               hintStyle: AppTextStyles.bodyMedium.copyWith(
@@ -215,10 +226,10 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               suffixIcon: IconButton(
                 onPressed: () {
-                  // فتح الفلاتر
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('الفلاتر قريباً')),
-                  );
+                  // ScaffoldMessenger.of(context).showSnackBar(
+                  //   const SnackBar(content: Text('الفلاتر قريباً')),
+                  // );
+                  print('الفلاتر قريباً');
                 },
                 icon: const Icon(
                   Icons.tune,
@@ -231,19 +242,30 @@ class _HomeScreenState extends State<HomeScreen> {
                 vertical: 16,
               ),
             ),
-            onSubmitted: (value) {
-              // تنفيذ البحث
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('البحث عن: $value')),
-              );
-            },
+            // onSubmitted: (value) { // تم التعليق بناءً على تعليمات المستخدم
+            //   ScaffoldMessenger.of(context).showSnackBar(
+            //     SnackBar(content: Text('البحث عن: $value')),
+            //   );
+            // },
           ),
         ),
       ),
     );
   }
+}
 
-  Widget _buildPromoBanners() {
+class _PromoBanners extends StatefulWidget {
+  const _PromoBanners();
+
+  @override
+  State<_PromoBanners> createState() => _PromoBannersState();
+}
+
+class _PromoBannersState extends State<_PromoBanners> {
+  int _currentBannerIndex = 0;
+
+  @override
+  Widget build(BuildContext context) {
     return SliverToBoxAdapter(
       child: Container(
         height: 180,
@@ -343,8 +365,13 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+}
 
-  Widget _buildCategoriesSection() {
+class _CategoriesSection extends StatelessWidget {
+  const _CategoriesSection();
+
+  @override
+  Widget build(BuildContext context) {
     return SliverToBoxAdapter(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -363,10 +390,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 const Spacer(),
                 TextButton(
                   onPressed: () {
-                    // عرض جميع الفئات
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('عرض جميع الفئات قريباً')),
-                    );
+                    // ScaffoldMessenger.of(context).showSnackBar(
+                    //   const SnackBar(content: Text('عرض جميع الفئات قريباً')),
+                    // );
+                    print('عرض جميع الفئات قريباً');
                   },
                   child: Text(
                     'عرض الكل',
@@ -381,7 +408,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           
           // شبكة الفئات
-          Container(
+          SizedBox(
             height: 120,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
@@ -439,7 +466,31 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildFeaturedStores() {
+  IconData _getIconData(String iconName) {
+    switch (iconName) {
+      case 'fastfood':
+        return Icons.fastfood;
+      case 'local_grocery_store':
+        return Icons.local_grocery_store;
+      case 'local_pharmacy':
+        return Icons.local_pharmacy;
+      case 'bakery_dining':
+        return Icons.bakery_dining;
+      case 'pets':
+        return Icons.pets;
+      case 'more_horiz':
+        return Icons.more_horiz;
+      default:
+        return Icons.category;
+    }
+  }
+}
+
+class _FeaturedStores extends StatelessWidget {
+  const _FeaturedStores();
+
+  @override
+  Widget build(BuildContext context) {
     return SliverToBoxAdapter(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -458,10 +509,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 const Spacer(),
                 TextButton(
                   onPressed: () {
-                    // عرض جميع المحلات
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('عرض جميع المحلات قريباً')),
-                    );
+                    // ScaffoldMessenger.of(context).showSnackBar(
+                    //   const SnackBar(content: Text('عرض جميع المحلات قريباً')),
+                    // );
+                    print('عرض جميع المحلات قريباً');
                   },
                   child: Text(
                     'عرض الكل',
@@ -476,26 +527,25 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           
           // قائمة المحلات
-          Container(
-            height: 280,
+          SizedBox(
+            height: 200,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: AppConstants.defaultPadding),
               itemCount: MockData.stores.length,
               itemBuilder: (context, index) {
                 final store = MockData.stores[index];
-                return Container(
-                  width: 250,
-                  margin: const EdgeInsets.only(right: AppConstants.smallPadding),
-                  child: StoreCard(
-                    store: store,
-                    onTap: () {
-                      // فتح صفحة المتجر
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('فتح متجر: ${store['name']}')),
-                      );
-                    },
-                  ),
+                return StoreCard(
+                  storeName: store['name'],
+                  storeImage: store['image'],
+                  rating: store['rating'].toDouble(),
+                  deliveryTime: store['deliveryTime'],
+                  onTap: () {
+                    // ScaffoldMessenger.of(context).showSnackBar(
+                    //   SnackBar(content: Text('الذهاب إلى ${store['name']} قريباً')),
+                    // );
+                    print('الذهاب إلى ${store['name']} قريباً');
+                  },
                 );
               },
             ),
@@ -504,8 +554,13 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+}
 
-  Widget _buildBestSellingProducts() {
+class _BestSellingProducts extends StatelessWidget {
+  const _BestSellingProducts();
+
+  @override
+  Widget build(BuildContext context) {
     return SliverToBoxAdapter(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -516,7 +571,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Row(
               children: [
                 Text(
-                  'الأكثر مبيعاً',
+                  'المنتجات الأكثر مبيعاً',
                   style: AppTextStyles.headlineSmall.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -524,10 +579,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 const Spacer(),
                 TextButton(
                   onPressed: () {
-                    // عرض جميع المنتجات
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('عرض جميع المنتجات قريباً')),
-                    );
+                    // ScaffoldMessenger.of(context).showSnackBar(
+                    //   const SnackBar(content: Text('عرض جميع المنتجات قريباً')),
+                    // );
+                    print('عرض جميع المنتجات قريباً');
                   },
                   child: Text(
                     'عرض الكل',
@@ -542,133 +597,101 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           
           // شبكة المنتجات
-          Container(
-            height: 280,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: AppConstants.defaultPadding),
-              itemCount: MockData.products.length,
-              itemBuilder: (context, index) {
-                final product = MockData.products[index];
-                return Container(
-                  width: 180,
-                  margin: const EdgeInsets.only(right: AppConstants.smallPadding),
-                  child: ProductCard(
-                    product: product,
-                    onTap: () {
-                      // فتح صفحة المنتج
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('فتح منتج: ${product['name']}')),
-                      );
-                    },
-                    onAddToCart: () {
-                      // إضافة للسلة
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('تم إضافة ${product['name']} للسلة')),
-                      );
-                    },
-                  ),
-                );
-              },
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            padding: const EdgeInsets.symmetric(horizontal: AppConstants.defaultPadding),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: AppConstants.defaultPadding,
+              mainAxisSpacing: AppConstants.defaultPadding,
+              childAspectRatio: 0.7,
             ),
+            itemCount: MockData.products.length,
+            itemBuilder: (context, index) {
+              final product = MockData.products[index];
+              return ProductCard(
+                productName: product['name'],
+                productImage: product['image'],
+                price: product['price'].toDouble(),
+                rating: product['rating'].toDouble(),
+                onTap: () {
+                  // ScaffoldMessenger.of(context).showSnackBar(
+                  //   SnackBar(content: Text('الذهاب إلى ${product['name']} قريباً')),
+                  // );
+                  print('الذهاب إلى ${product['name']} قريباً');
+                },
+                onAddToCart: () {
+                  // ScaffoldMessenger.of(context).showSnackBar(
+                  //   SnackBar(content: Text('إضافة ${product['name']} إلى السلة (محاكاة)')),
+                  // );
+                  print('إضافة ${product['name']} إلى السلة (محاكاة)');
+                },
+              );
+            },
           ),
         ],
       ),
     );
-  }
-
-  Widget _buildBottomNavigationBar() {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 8,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: AppColors.white,
-        selectedItemColor: AppColors.primary,
-        unselectedItemColor: AppColors.textSecondary,
-        selectedLabelStyle: AppTextStyles.caption.copyWith(
-          fontWeight: FontWeight.w600,
-        ),
-        unselectedLabelStyle: AppTextStyles.caption,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'الرئيسية',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.category),
-            label: 'الفئات',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_cart),
-            label: 'السلة',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.favorite),
-            label: 'المفضلة',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'الملف الشخصي',
-          ),
-        ],
-        onTap: (index) {
-          // التنقل بين الصفحات
-          switch (index) {
-            case 0:
-              // الرئيسية (الصفحة الحالية)
-              break;
-            case 1:
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('صفحة الفئات قريباً')),
-              );
-              break;
-            case 2:
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('صفحة السلة قريباً')),
-              );
-              break;
-            case 3:
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('صفحة المفضلة قريباً')),
-              );
-              break;
-            case 4:
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('الملف الشخصي قريباً')),
-              );
-              break;
-          }
-        },
-      ),
-    );
-  }
-
-  IconData _getIconData(String iconName) {
-    switch (iconName) {
-      case 'phone_android':
-        return Icons.phone_android;
-      case 'checkroom':
-        return Icons.checkroom;
-      case 'restaurant':
-        return Icons.restaurant;
-      case 'home':
-        return Icons.home;
-      case 'sports_soccer':
-        return Icons.sports_soccer;
-      case 'menu_book':
-        return Icons.menu_book;
-      default:
-        return Icons.category;
-    }
   }
 }
+
+class _BottomNavigationBar extends StatelessWidget {
+  const _BottomNavigationBar();
+
+  @override
+  Widget build(BuildContext context) {
+    return BottomNavigationBar(
+      type: BottomNavigationBarType.fixed,
+      backgroundColor: AppColors.white,
+      selectedItemColor: AppColors.primary,
+      unselectedItemColor: AppColors.textSecondary,
+      selectedLabelStyle: AppTextStyles.caption.copyWith(fontWeight: FontWeight.bold),
+      unselectedLabelStyle: AppTextStyles.caption,
+      currentIndex: 0, // دائمًا 0 للشاشة الرئيسية الثابتة
+      onTap: (index) {
+        // String route = AppConstants.homeRoute; // تم التعليق بناءً على تعليمات المستخدم
+        // switch (index) { // تم التعليق بناءً على تعليمات المستخدم
+        //   case 0:
+        //     route = AppConstants.homeRoute;
+        //     break;
+        //   case 1:
+        //     route = AppConstants.categoriesRoute; // سيتم تعريف هذا المسار لاحقاً
+        //     break;
+        //   case 2:
+        //     route = AppConstants.cartRoute; // سيتم تعريف هذا المسار لاحقاً
+        //     break;
+        //   case 3:
+        //     route = AppConstants.profileRoute; // سيتم تعريف هذا المسار لاحقاً
+        //     break;
+        // }
+        // GoRouter.of(context).go(route); // تم التعليق بناءً على تعليمات المستخدم
+        print('تم النقر على عنصر التنقل رقم $index');
+      },
+      items: const [
+        BottomNavigationBarItem(
+          icon: Icon(Icons.home_outlined),
+          activeIcon: Icon(Icons.home),
+          label: 'الرئيسية',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.category_outlined),
+          activeIcon: Icon(Icons.category),
+          label: 'الفئات',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.shopping_cart_outlined),
+          activeIcon: Icon(Icons.shopping_cart),
+          label: 'السلة',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.person_outline),
+          activeIcon: Icon(Icons.person),
+          label: 'الحساب',
+        ),
+      ],
+    );
+  }
+}
+
 

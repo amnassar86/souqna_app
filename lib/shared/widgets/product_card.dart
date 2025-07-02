@@ -5,14 +5,14 @@ import '../../config/app_constants.dart';
 
 class ProductCard extends StatelessWidget {
   final Map<String, dynamic> product;
-  final VoidCallback? onTap;
-  final VoidCallback? onAddToCart;
+  // final VoidCallback? onTap; // تم التعليق بناءً على تعليمات المستخدم
+  // final VoidCallback? onAddToCart; // تم التعليق بناءً على تعليمات المستخدم
 
   const ProductCard({
     super.key,
     required this.product,
-    this.onTap,
-    this.onAddToCart,
+    // this.onTap, // تم التعليق بناءً على تعليمات المستخدم
+    // this.onAddToCart, // تم التعليق بناءً على تعليمات المستخدم
   });
 
   @override
@@ -29,7 +29,9 @@ class ProductCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppConstants.borderRadius),
       ),
       child: InkWell(
-        onTap: onTap,
+        onTap: () {
+          print('Product tapped: ${product['name']}');
+        },
         borderRadius: BorderRadius.circular(AppConstants.borderRadius),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -173,7 +175,9 @@ class ProductCard extends StatelessWidget {
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: IconButton(
-                            onPressed: onAddToCart,
+                            onPressed: () {
+                              print('Add to cart: ${product['name']}');
+                            },
                             icon: const Icon(
                               Icons.add,
                               size: 16,
@@ -194,4 +198,5 @@ class ProductCard extends StatelessWidget {
     );
   }
 }
+
 

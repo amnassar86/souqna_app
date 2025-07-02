@@ -5,12 +5,12 @@ import '../../config/app_constants.dart';
 
 class StoreCard extends StatelessWidget {
   final Map<String, dynamic> store;
-  final VoidCallback? onTap;
+  // final VoidCallback? onTap; // تم التعليق بناءً على تعليمات المستخدم
 
   const StoreCard({
     super.key,
     required this.store,
-    this.onTap,
+    // this.onTap, // تم التعليق بناءً على تعليمات المستخدم
   });
 
   @override
@@ -27,7 +27,9 @@ class StoreCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppConstants.borderRadius),
       ),
       child: InkWell(
-        onTap: onTap,
+        onTap: () {
+          print('Store tapped: ${store['name']}');
+        },
         borderRadius: BorderRadius.circular(AppConstants.borderRadius),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -213,4 +215,5 @@ class StoreCard extends StatelessWidget {
     );
   }
 }
+
 

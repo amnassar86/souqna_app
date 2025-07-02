@@ -8,7 +8,7 @@ class CustomButton extends StatelessWidget {
   final String text;
   final VoidCallback? onPressed;
   final ButtonType type;
-  final bool isLoading;
+  // final bool isLoading; // تم التعليق بناءً على تعليمات المستخدم
   final Widget? icon;
   final double? width;
   final double? height;
@@ -20,7 +20,7 @@ class CustomButton extends StatelessWidget {
     required this.text,
     this.onPressed,
     this.type = ButtonType.primary,
-    this.isLoading = false,
+    // this.isLoading = false, // تم التعليق بناءً على تعليمات المستخدم
     this.icon,
     this.width,
     this.height,
@@ -35,16 +35,7 @@ class CustomButton extends StatelessWidget {
     final effectiveBorderRadius = borderRadius ?? 
         BorderRadius.circular(AppConstants.borderRadius);
 
-    Widget buttonChild = isLoading
-        ? const SizedBox(
-            width: 20,
-            height: 20,
-            child: CircularProgressIndicator(
-              strokeWidth: 2,
-              valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
-            ),
-          )
-        : Row(
+    Widget buttonChild = Row(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -62,7 +53,7 @@ class CustomButton extends StatelessWidget {
           width: effectiveWidth,
           height: effectiveHeight,
           child: ElevatedButton(
-            onPressed: isLoading ? null : onPressed,
+            onPressed: onPressed,
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
               foregroundColor: AppColors.textOnPrimary,
@@ -79,7 +70,7 @@ class CustomButton extends StatelessWidget {
           width: effectiveWidth,
           height: effectiveHeight,
           child: ElevatedButton(
-            onPressed: isLoading ? null : onPressed,
+            onPressed: onPressed,
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.secondary,
               foregroundColor: AppColors.textOnPrimary,
@@ -96,23 +87,14 @@ class CustomButton extends StatelessWidget {
           width: effectiveWidth,
           height: effectiveHeight,
           child: OutlinedButton(
-            onPressed: isLoading ? null : onPressed,
+            onPressed: onPressed,
             style: OutlinedButton.styleFrom(
               foregroundColor: AppColors.primary,
               side: const BorderSide(color: AppColors.primary, width: 1.5),
               shape: RoundedRectangleBorder(borderRadius: effectiveBorderRadius),
               padding: padding,
             ),
-            child: isLoading
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
-                    ),
-                  )
-                : buttonChild,
+            child: buttonChild,
           ),
         );
 
@@ -121,22 +103,13 @@ class CustomButton extends StatelessWidget {
           width: effectiveWidth,
           height: effectiveHeight,
           child: TextButton(
-            onPressed: isLoading ? null : onPressed,
+            onPressed: onPressed,
             style: TextButton.styleFrom(
               foregroundColor: AppColors.primary,
               shape: RoundedRectangleBorder(borderRadius: effectiveBorderRadius),
               padding: padding,
             ),
-            child: isLoading
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
-                    ),
-                  )
-                : buttonChild,
+            child: buttonChild,
           ),
         );
     }

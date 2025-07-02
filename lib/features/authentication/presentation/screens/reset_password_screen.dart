@@ -1,21 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../../config/app_constants.dart';
-import '../../../../core/services/auth_service.dart';
-import '../../../../core/utils/validators.dart';
+import 'package:go_router/go_router.dart';
+import '../../../../shared/styles/app_colors.dart';
+import '../../../../shared/styles/app_text_styles.dart';
 import '../../../../shared/widgets/custom_text_field.dart';
 import '../../../../shared/widgets/custom_button.dart';
-import '../../../../shared/styles/app_colors.dart';
-import '../../../../routes/app_router.dart';
+import '../../../../config/app_constants.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
-  final String? accessToken;
-  final String? refreshToken;
+  // لا حاجة لـ accessToken و refreshToken في الواجهة الثابتة
+  // final String? accessToken;
+  // final String? refreshToken;
   
   const ResetPasswordScreen({
     super.key,
-    this.accessToken,
-    this.refreshToken,
+    // this.accessToken,
+    // this.refreshToken,
   });
 
   @override
@@ -26,84 +25,26 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
   final _newPasswordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  final _newPasswordFocusNode = FocusNode();
-  final _confirmPasswordFocusNode = FocusNode();
   
-  bool _isLoading = false;
-  bool _passwordsMatch = true;
+  // لا حاجة لـ _isLoading أو _passwordsMatch في الواجهة الثابتة
+  // bool _isLoading = false;
+  // bool _passwordsMatch = true;
 
   @override
   void dispose() {
     _newPasswordController.dispose();
     _confirmPasswordController.dispose();
-    _newPasswordFocusNode.dispose();
-    _confirmPasswordFocusNode.dispose();
     super.dispose();
   }
 
-  void _checkPasswordsMatch() {
-    setState(() {
-      _passwordsMatch = _newPasswordController.text == _confirmPasswordController.text;
-    });
-  }
-
-  Future<void> _resetPassword() async {
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
-
-    if (!_passwordsMatch) {
-      _showSnackBar('كلمات المرور غير متطابقة');
-      return;
-    }
-
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      await AuthService.changePassword(
-        newPassword: _newPasswordController.text,
+  void _handleResetPassword() {
+    if (_formKey.currentState!.validate()) {
+      // محاكاة إعادة تعيين كلمة المرور
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('تم تغيير كلمة المرور بنجاح! (محاكاة)'))
       );
-      
-      if (mounted) {
-        _showSnackBar('تم تغيير كلمة المرور بنجاح!', isError: false);
-        // Navigate to sign in screen after successful password reset
-        Future.delayed(const Duration(seconds: 2), () {
-          if (mounted) {
-            AppRouter.goToSignIn(context);
-          }
-        });
-      }
-    } on AuthException catch (e) {
-      if (mounted) {
-        _showSnackBar(e.message);
-      }
-    } catch (e) {
-      if (mounted) {
-        _showSnackBar(AppConstants.unknownError);
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
+      GoRouter.of(context).go(AppConstants.signInRoute);
     }
-  }
-
-  void _showSnackBar(String message, {bool isError = true}) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: isError ? AppColors.error : AppColors.success,
-        behavior: SnackBarBehavior.floating,
-        margin: const EdgeInsets.all(AppConstants.defaultPadding),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppConstants.borderRadius),
-        ),
-      ),
-    );
   }
 
   @override
@@ -176,12 +117,17 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   label: 'كلمة المرور الجديدة',
                   hint: 'أدخل كلمة مرور قوية',
                   controller: _newPasswordController,
-                  validator: Validators.validatePassword,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'يرجى إدخال كلمة المرور الجديدة';
+                    }
+                    if (value.length < 6) {
+                      return 'كلمة المرور يجب أن تكون 6 أحرف على الأقل';
+                    }
+                    return null;
+                  },
                   obscureText: true,
                   textInputAction: TextInputAction.next,
-                  focusNode: _newPasswordFocusNode,
-                  onSubmitted: (_) => _confirmPasswordFocusNode.requestFocus(),
-                  onChanged: (_) => _checkPasswordsMatch(),
                   prefixIcon: const Icon(Icons.lock_outline),
                   autofocus: true,
                 ),
@@ -193,42 +139,19 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   label: 'تأكيد كلمة المرور الجديدة',
                   hint: 'أعد إدخال كلمة المرور الجديدة',
                   controller: _confirmPasswordController,
-                  validator: (value) => Validators.validateConfirmPassword(
-                    value,
-                    _newPasswordController.text,
-                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'يرجى تأكيد كلمة المرور الجديدة';
+                    }
+                    if (value != _newPasswordController.text) {
+                      return 'كلمة المرور غير متطابقة';
+                    }
+                    return null;
+                  },
                   obscureText: true,
                   textInputAction: TextInputAction.done,
-                  focusNode: _confirmPasswordFocusNode,
-                  onSubmitted: (_) => _resetPassword(),
-                  onChanged: (_) => _checkPasswordsMatch(),
-                  prefixIcon: Icon(
-                    Icons.lock_outline,
-                    color: _passwordsMatch ? null : AppColors.error,
-                  ),
+                  prefixIcon: const Icon(Icons.lock_outline),
                 ),
-                
-                // Password Match Indicator
-                if (_newPasswordController.text.isNotEmpty && 
-                    _confirmPasswordController.text.isNotEmpty) ...[
-                  const SizedBox(height: AppConstants.smallPadding),
-                  Row(
-                    children: [
-                      Icon(
-                        _passwordsMatch ? Icons.check_circle : Icons.error,
-                        color: _passwordsMatch ? AppColors.success : AppColors.error,
-                        size: 16,
-                      ),
-                      const SizedBox(width: AppConstants.smallPadding),
-                      Text(
-                        _passwordsMatch ? 'كلمات المرور متطابقة' : 'كلمات المرور غير متطابقة',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: _passwordsMatch ? AppColors.success : AppColors.error,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
                 
                 const SizedBox(height: AppConstants.largePadding),
                 
@@ -285,8 +208,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 // Reset Password Button
                 CustomButton(
                   text: 'تعيين كلمة المرور الجديدة',
-                  onPressed: _resetPassword,
-                  isLoading: _isLoading,
+                  onPressed: _handleResetPassword,
                   icon: const Icon(Icons.save),
                 ),
                 
@@ -342,7 +264,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                     TextButton(
-                      onPressed: () => AppRouter.goToSignIn(context),
+                      onPressed: () => GoRouter.of(context).go(AppConstants.signInRoute),
                       child: const Text(
                         'تسجيل الدخول',
                         style: TextStyle(fontWeight: FontWeight.bold),

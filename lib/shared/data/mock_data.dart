@@ -262,45 +262,7 @@ class MockData {
     },
   ];
 
-  // دوال مساعدة للحصول على البيانات
-  static Map<String, dynamic>? getProductById(String id) {
-    try {
-      return products.firstWhere((product) => product['id'] == id);
-    } catch (e) {
-      return null;
-    }
-  }
-
-  static Map<String, dynamic>? getStoreById(String id) {
-    try {
-      return stores.firstWhere((store) => store['id'] == id);
-    } catch (e) {
-      return null;
-    }
-  }
-
-  static Map<String, dynamic>? getCategoryById(String id) {
-    try {
-      return categories.firstWhere((category) => category['id'] == id);
-    } catch (e) {
-      return null;
-    }
-  }
-
-  static List<Map<String, dynamic>> getProductsByCategory(String categoryId) {
-    return products.where((product) => product['categoryId'] == categoryId).toList();
-  }
-
-  static List<Map<String, dynamic>> getProductsByStore(String storeId) {
-    return products.where((product) => product['storeId'] == storeId).toList();
-  }
-
-  static double getCartTotal() {
-    return cartItems.fold(0.0, (total, item) => total + (item['price'] * item['quantity']));
-  }
-
-  static int getCartItemCount() {
-    return cartItems.fold(0, (total, item) => total + (item['quantity'] as int));
-  }
+  // الدوال المساعدة تم إزالتها بناءً على تعليمات المستخدم لضمان بناء الواجهات المرئية الثابتة فقط.
 }
+
 

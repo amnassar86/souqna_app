@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../../config/app_constants.dart';
-import '../../../../core/services/auth_service.dart';
-import '../../../../core/utils/validators.dart';
+import '../../../../shared/styles/app_colors.dart';
+import '../../../../shared/styles/app_text_styles.dart';
 import '../../../../shared/widgets/custom_text_field.dart';
 import '../../../../shared/widgets/custom_button.dart';
-import '../../../../shared/styles/app_colors.dart';
-import '../../../../routes/app_router.dart';
+import '../../../../config/app_constants.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -16,306 +13,301 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final _fullNameController = TextEditingController();
+  final _nameController = TextEditingController();
   final _emailController = TextEditingController();
+  final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  
-  final _fullNameFocusNode = FocusNode();
-  final _emailFocusNode = FocusNode();
-  final _passwordFocusNode = FocusNode();
-  final _confirmPasswordFocusNode = FocusNode();
-  
-  bool _isLoading = false;
   bool _acceptTerms = false;
+  bool _isPasswordVisible = false;
+  bool _isConfirmPasswordVisible = false;
 
   @override
-  void dispose() {
-    _fullNameController.dispose();
-    _emailController.dispose();
-    _passwordController.dispose();
-    _confirmPasswordController.dispose();
-    _fullNameFocusNode.dispose();
-    _emailFocusNode.dispose();
-    _passwordFocusNode.dispose();
-    _confirmPasswordFocusNode.dispose();
-    super.dispose();
-  }
-
-  Future<void> _signUp() async {
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
-
-    if (!_acceptTerms) {
-      _showSnackBar('يجب الموافقة على الشروط والأحكام');
-      return;
-    }
-
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      final response = await AuthService.signUp(
-        email: _emailController.text.trim(),
-        password: _passwordController.text,
-        fullName: _fullNameController.text.trim(),
-      );
-
-      if (response.user != null && mounted) {
-        _showSnackBar(
-          'تم إنشاء الحساب بنجاح! يرجى التحقق من بريدك الإلكتروني',
-          isError: false,
-        );
-        AppRouter.goToSignIn(context);
-      }
-    } on AuthException catch (e) {
-      if (mounted) {
-        _showSnackBar(e.message);
-      }
-    } catch (e) {
-      if (mounted) {
-        _showSnackBar(AppConstants.unknownError);
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    }
-  }
-
-  void _showSnackBar(String message, {bool isError = true}) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: isError ? AppColors.error : AppColors.success,
-        behavior: SnackBarBehavior.floating,
-        margin: const EdgeInsets.all(AppConstants.defaultPadding),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppConstants.borderRadius),
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          onPressed: () {
+            print('Back button pressed');
+          },
+          icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+        ),
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(AppConstants.defaultPadding),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const SizedBox(height: 20),
+              
+              // عنوان الصفحة
+              Text(
+                'إنشاء حساب جديد',
+                style: AppTextStyles.headlineLarge.copyWith(
+                  color: AppColors.textPrimary,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              
+              const SizedBox(height: 8),
+              
+              Text(
+                'انضم إلى سوقنا واستمتع بتجربة تسوق مميزة',
+                style: AppTextStyles.bodyMedium.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              
+              const SizedBox(height: 40),
+              
+              // حقل الاسم الكامل
+              CustomTextField(
+                controller: _nameController,
+                label: 'الاسم الكامل',
+                hint: 'أدخل اسمك الكامل',
+                prefixIcon: Icons.person_outline,
+              ),
+              
+              const SizedBox(height: 20),
+              
+              // حقل البريد الإلكتروني
+              CustomTextField(
+                controller: _emailController,
+                label: 'البريد الإلكتروني',
+                hint: 'أدخل بريدك الإلكتروني',
+                prefixIcon: Icons.email_outlined,
+                keyboardType: TextInputType.emailAddress,
+              ),
+              
+              const SizedBox(height: 20),
+              
+              // حقل رقم الهاتف
+              CustomTextField(
+                controller: _phoneController,
+                label: 'رقم الهاتف',
+                hint: 'أدخل رقم هاتفك',
+                prefixIcon: Icons.phone_outlined,
+                keyboardType: TextInputType.phone,
+              ),
+              
+              const SizedBox(height: 20),
+              
+              // حقل كلمة المرور
+              CustomTextField(
+                controller: _passwordController,
+                label: 'كلمة المرور',
+                hint: 'أدخل كلمة مرور قوية',
+                prefixIcon: Icons.lock_outline,
+                isPassword: true,
+                isPasswordVisible: _isPasswordVisible,
+                onTogglePasswordVisibility: () {
+                  setState(() {
+                    _isPasswordVisible = !_isPasswordVisible;
+                  });
+                },
+              ),
+              
+              const SizedBox(height: 20),
+              
+              // حقل تأكيد كلمة المرور
+              CustomTextField(
+                controller: _confirmPasswordController,
+                label: 'تأكيد كلمة المرور',
+                hint: 'أعد إدخال كلمة المرور',
+                prefixIcon: Icons.lock_outline,
+                isPassword: true,
+                isPasswordVisible: _isConfirmPasswordVisible,
+                onTogglePasswordVisibility: () {
+                  setState(() {
+                    _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                  });
+                },
+              ),
+              
+              const SizedBox(height: 20),
+              
+              // شروط الاستخدام
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Checkbox(
+                    value: _acceptTerms,
+                    onChanged: (value) {
+                      setState(() {
+                        _acceptTerms = value ?? false;
+                      });
+                    },
+                    activeColor: AppColors.primary,
+                  ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 12),
+                        RichText(
+                          text: TextSpan(
+                            style: AppTextStyles.bodySmall.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
+                            children: [
+                              const TextSpan(text: 'أوافق على '),
+                              TextSpan(
+                                text: 'شروط الاستخدام',
+                                style: TextStyle(
+                                  color: AppColors.primary,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const TextSpan(text: ' و '),
+                              TextSpan(
+                                text: 'سياسة الخصوصية',
+                                style: TextStyle(
+                                  color: AppColors.primary,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              
+              const SizedBox(height: 30),
+              
+              // زر إنشاء الحساب
+              CustomButton(
+                text: 'إنشاء الحساب',
+                onPressed: _acceptTerms ? () {
+                  print('Sign up button pressed');
+                  print('Name: ${_nameController.text}');
+                  print('Email: ${_emailController.text}');
+                  print('Phone: ${_phoneController.text}');
+                  print('Password: ${_passwordController.text}');
+                } : null,
+                isLoading: false,
+              ),
+              
+              const SizedBox(height: 30),
+              
+              // فاصل "أو"
+              Row(
+                children: [
+                  const Expanded(child: Divider()),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Text(
+                      'أو',
+                      style: AppTextStyles.bodySmall.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ),
+                  const Expanded(child: Divider()),
+                ],
+              ),
+              
+              const SizedBox(height: 30),
+              
+              // أزرار التسجيل بوسائل التواصل
+              Row(
+                children: [
+                  Expanded(
+                    child: _SocialSignUpButton(
+                      icon: Icons.g_mobiledata,
+                      label: 'Google',
+                      onPressed: () {
+                        print('Google sign up pressed');
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: _SocialSignUpButton(
+                      icon: Icons.facebook,
+                      label: 'Facebook',
+                      onPressed: () {
+                        print('Facebook sign up pressed');
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              
+              const SizedBox(height: 40),
+              
+              // رابط تسجيل الدخول
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'لديك حساب بالفعل؟ ',
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      print('Navigate to sign in screen');
+                    },
+                    child: Text(
+                      'تسجيل الدخول',
+                      style: AppTextStyles.bodyMedium.copyWith(
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
   @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _phoneController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
+}
+
+class _SocialSignUpButton extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onPressed;
+
+  const _SocialSignUpButton({
+    required this.icon,
+    required this.label,
+    required this.onPressed,
+  });
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('إنشاء حساب جديد'),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        foregroundColor: AppColors.textPrimary,
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(AppConstants.defaultPadding),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const SizedBox(height: AppConstants.defaultPadding),
-                
-                // Header
-                Center(
-                  child: Column(
-                    children: [
-                      Container(
-                        width: 80,
-                        height: 80,
-                        decoration: BoxDecoration(
-                          color: AppColors.primary,
-                          borderRadius: BorderRadius.circular(40),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.primary.withOpacity(0.3),
-                              blurRadius: 15,
-                              offset: const Offset(0, 8),
-                            ),
-                          ],
-                        ),
-                        child: const Icon(
-                          Icons.person_add,
-                          size: 40,
-                          color: AppColors.textOnPrimary,
-                        ),
-                      ),
-                      const SizedBox(height: AppConstants.defaultPadding),
-                      Text(
-                        'انضم إلى سوقنا',
-                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: AppConstants.smallPadding),
-                      Text(
-                        'أنشئ حسابك واستمتع بتجربة تسوق مميزة',
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: AppColors.textSecondary,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                ),
-                
-                const SizedBox(height: AppConstants.largePadding),
-                
-                // Full Name Field
-                CustomTextField(
-                  label: 'الاسم الكامل',
-                  hint: 'أدخل اسمك الكامل',
-                  controller: _fullNameController,
-                  validator: Validators.validateName,
-                  keyboardType: TextInputType.name,
-                  textInputAction: TextInputAction.next,
-                  focusNode: _fullNameFocusNode,
-                  onSubmitted: (_) => _emailFocusNode.requestFocus(),
-                  prefixIcon: const Icon(Icons.person_outline),
-                ),
-                
-                const SizedBox(height: AppConstants.defaultPadding),
-                
-                // Email Field
-                CustomTextField(
-                  label: 'البريد الإلكتروني',
-                  hint: 'أدخل بريدك الإلكتروني',
-                  controller: _emailController,
-                  validator: Validators.validateEmail,
-                  keyboardType: TextInputType.emailAddress,
-                  textInputAction: TextInputAction.next,
-                  focusNode: _emailFocusNode,
-                  onSubmitted: (_) => _passwordFocusNode.requestFocus(),
-                  prefixIcon: const Icon(Icons.email_outlined),
-                ),
-                
-                const SizedBox(height: AppConstants.defaultPadding),
-                
-                // Password Field
-                CustomTextField(
-                  label: 'كلمة المرور',
-                  hint: 'أدخل كلمة مرور قوية',
-                  controller: _passwordController,
-                  validator: Validators.validatePassword,
-                  obscureText: true,
-                  textInputAction: TextInputAction.next,
-                  focusNode: _passwordFocusNode,
-                  onSubmitted: (_) => _confirmPasswordFocusNode.requestFocus(),
-                  prefixIcon: const Icon(Icons.lock_outline),
-                ),
-                
-                const SizedBox(height: AppConstants.defaultPadding),
-                
-                // Confirm Password Field
-                CustomTextField(
-                  label: 'تأكيد كلمة المرور',
-                  hint: 'أعد إدخال كلمة المرور',
-                  controller: _confirmPasswordController,
-                  validator: (value) => Validators.validateConfirmPassword(
-                    value,
-                    _passwordController.text,
-                  ),
-                  obscureText: true,
-                  textInputAction: TextInputAction.done,
-                  focusNode: _confirmPasswordFocusNode,
-                  onSubmitted: (_) => _signUp(),
-                  prefixIcon: const Icon(Icons.lock_outline),
-                ),
-                
-                const SizedBox(height: AppConstants.defaultPadding),
-                
-                // Terms and Conditions Checkbox
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Checkbox(
-                      value: _acceptTerms,
-                      onChanged: (value) {
-                        setState(() {
-                          _acceptTerms = value ?? false;
-                        });
-                      },
-                    ),
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _acceptTerms = !_acceptTerms;
-                          });
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 12),
-                          child: RichText(
-                            text: TextSpan(
-                              style: Theme.of(context).textTheme.bodyMedium,
-                              children: [
-                                const TextSpan(text: 'أوافق على '),
-                                TextSpan(
-                                  text: 'الشروط والأحكام',
-                                  style: TextStyle(
-                                    color: AppColors.primary,
-                                    fontWeight: FontWeight.bold,
-                                    decoration: TextDecoration.underline,
-                                  ),
-                                ),
-                                const TextSpan(text: ' و'),
-                                TextSpan(
-                                  text: 'سياسة الخصوصية',
-                                  style: TextStyle(
-                                    color: AppColors.primary,
-                                    fontWeight: FontWeight.bold,
-                                    decoration: TextDecoration.underline,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                
-                const SizedBox(height: AppConstants.largePadding),
-                
-                // Sign Up Button
-                CustomButton(
-                  text: 'إنشاء حساب',
-                  onPressed: _signUp,
-                  isLoading: _isLoading,
-                  icon: const Icon(Icons.person_add),
-                ),
-                
-                const SizedBox(height: AppConstants.largePadding),
-                
-                // Sign In Link
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'هل لديك حساب بالفعل؟ ',
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                    TextButton(
-                      onPressed: () => AppRouter.goToSignIn(context),
-                      child: const Text(
-                        'تسجيل الدخول',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ],
-                ),
-                
-                const SizedBox(height: AppConstants.largePadding),
-              ],
-            ),
-          ),
+    return OutlinedButton.icon(
+      onPressed: onPressed,
+      icon: Icon(icon, size: 20),
+      label: Text(label),
+      style: OutlinedButton.styleFrom(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        side: BorderSide(color: AppColors.border),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppConstants.borderRadius),
         ),
       ),
     );
