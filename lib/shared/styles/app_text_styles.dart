@@ -48,6 +48,9 @@ class AppTextStyles {
     color: AppColors.textPrimary,
     height: 1.4,
   );
+
+  // Alias for headlineLarge (used in authentication screens)
+  static TextStyle get headlineLarge => h1;
   
   // Body Styles
   static TextStyle get bodyLarge => GoogleFonts.cairo(

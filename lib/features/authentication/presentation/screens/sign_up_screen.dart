@@ -31,7 +31,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         elevation: 0,
         leading: IconButton(
           onPressed: () {
-            print('Back button pressed');
+            // print("Back button pressed");
           },
           icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
         ),
@@ -187,11 +187,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
               CustomButton(
                 text: 'إنشاء الحساب',
                 onPressed: _acceptTerms ? () {
-                  print('Sign up button pressed');
-                  print('Name: ${_nameController.text}');
-                  print('Email: ${_emailController.text}');
-                  print('Phone: ${_phoneController.text}');
-                  print('Password: ${_passwordController.text}');
+                  // print("Sign up button pressed");
+                  // print("Name: ${_nameController.text}");
+                  // print("Email: ${_emailController.text}");
+                  // print("Phone: ${_phoneController.text}");
+                  // print("Password: ${_passwordController.text}");
                 } : null,
                 isLoading: false,
               ),
@@ -225,7 +225,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       icon: Icons.g_mobiledata,
                       label: 'Google',
                       onPressed: () {
-                        print('Google sign up pressed');
+                        // print("Google sign up pressed");
                       },
                     ),
                   ),

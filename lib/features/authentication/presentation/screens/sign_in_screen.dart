@@ -127,7 +127,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   const Spacer(),
                   TextButton(
                     onPressed: () {
-                      print('Navigate to forgot password screen');
+                      // print("Navigate to forgot password screen");
                     },
                     child: Text(
                       'نسيت كلمة المرور؟',
@@ -146,9 +146,9 @@ class _SignInScreenState extends State<SignInScreen> {
               CustomButton(
                 text: 'تسجيل الدخول',
                 onPressed: () {
-                  print('Sign in button pressed');
-                  print('Email: ${_emailController.text}');
-                  print('Password: ${_passwordController.text}');
+                  // print("Sign in button pressed");
+                  // print("Email: ${_emailController.text}");
+                  // print("Password: ${_passwordController.text}");
                 },
                 isLoading: false,
               ),
@@ -182,7 +182,7 @@ class _SignInScreenState extends State<SignInScreen> {
                       icon: Icons.g_mobiledata,
                       label: 'Google',
                       onPressed: () {
-                        print('Google sign in pressed');
+                        // print("Google sign in pressed");
                       },
                     ),
                   ),
@@ -192,7 +192,7 @@ class _SignInScreenState extends State<SignInScreen> {
                       icon: Icons.facebook,
                       label: 'Facebook',
                       onPressed: () {
-                        print('Facebook sign in pressed');
+                        // print("Facebook sign in pressed");
                       },
                     ),
                   ),
@@ -213,7 +213,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   ),
                   TextButton(
                     onPressed: () {
-                      print('Navigate to sign up screen');
+                      // print("Navigate to sign up screen");
                     },
                     child: Text(
                       'إنشاء حساب جديد',

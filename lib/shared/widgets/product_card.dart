@@ -30,7 +30,7 @@ class ProductCard extends StatelessWidget {
       ),
       child: InkWell(
         onTap: () {
-          print('Product tapped: ${product['name']}');
+          // print("Product tapped: ${product["name"]}"); // تم التعليق بناءً على تعليمات المستخدم
         },
         borderRadius: BorderRadius.circular(AppConstants.borderRadius),
         child: Column(
@@ -83,7 +83,7 @@ class ProductCard extends StatelessWidget {
                     child: Container(
                       padding: const EdgeInsets.all(4),
                       decoration: BoxDecoration(
-                        color: AppColors.white.withOpacity(0.9),
+                        color: AppColors.white.withAlpha((255 * 0.9).round()),
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(
@@ -176,7 +176,7 @@ class ProductCard extends StatelessWidget {
                           ),
                           child: IconButton(
                             onPressed: () {
-                              print('Add to cart: ${product['name']}');
+                              // print("Add to cart: ${product["name"]}"); // تم التعليق بناءً على تعليمات المستخدم
                             },
                             icon: const Icon(
                               Icons.add,

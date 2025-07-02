@@ -28,7 +28,7 @@ class StoreCard extends StatelessWidget {
       ),
       child: InkWell(
         onTap: () {
-          print('Store tapped: ${store['name']}');
+          // print("Store tapped: ${store["name"]}"); // تم التعليق بناءً على تعليمات المستخدم
         },
         borderRadius: BorderRadius.circular(AppConstants.borderRadius),
         child: Column(
@@ -60,7 +60,7 @@ class StoreCard extends StatelessWidget {
                         end: Alignment.bottomCenter,
                         colors: [
                           Colors.transparent,
-                          Colors.black.withOpacity(0.3),
+                          Colors.black.withAlpha((255 * 0.3).round()),
                         ],
                       ),
                     ),
